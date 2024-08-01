@@ -6,6 +6,7 @@ type InputProps = {
     error?: boolean;
     disable?: boolean;
     autocomplete?: boolean;
+    name?: string;
 };
 
 export default function Input(props: InputProps) {
@@ -17,6 +18,7 @@ export default function Input(props: InputProps) {
         <div className={props.label ? groupStyle : singleLineStyle}>
             {props.label && <label className="text-lg">{props.label}</label>}
             <input
+                name={props.name}
                 autoComplete={String(props.autocomplete)}
                 disabled={props.disable}
                 className="p-2 border-gray-400 border border-spacing-2 rounded bg-slate-200 focus:bg-slate-300"

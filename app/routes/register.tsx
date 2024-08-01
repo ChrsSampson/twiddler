@@ -2,10 +2,11 @@ import { useState } from "react";
 import { prisma } from "../prisma";
 import { ActionFunctionArgs } from "@remix-run/node";
 import { Form, redirect } from "@remix-run/react";
-import Input from "~/components/Input";
-import Button from "~/components/Button";
+import Input from "~/components/ui/Input";
+import Button from "~/components/ui/Button";
 import { useSubmit } from "@remix-run/react";
 import { json } from "@remix-run/react";
+import { Link } from "@remix-run/react";
 
 type RequestProps = {
     email: string;
@@ -97,9 +98,9 @@ export default function RegisterPage() {
                 <Button type="submit" onClick={() => {}}>
                     Submit
                 </Button>
-                <a href="/login" className="text-center text-slate-600 hover:text-slate-900">
+                <Link to="/login" className="text-center text-slate-600 hover:text-slate-900">
                     <sub className="hover:underline">Already have an Account?</sub>
-                </a>
+                </Link>
             </Form>
         </section>
     );
