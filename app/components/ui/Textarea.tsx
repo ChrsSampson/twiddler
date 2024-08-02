@@ -10,7 +10,7 @@ type AreaProps = {
 };
 
 export default function Textarea(props: AreaProps) {
-    const singleLineStyle = "flex p-2";
+    const singleLineStyle = "flex p-1";
 
     const groupStyle = "flex flex-col p-1";
 
@@ -19,9 +19,10 @@ export default function Textarea(props: AreaProps) {
             {props.label && <label className="text-lg">{props.label}</label>}
             <textarea
                 name={props.name}
+                spellCheck={true}
                 autoComplete={String(props.autocomplete)}
                 disabled={props.disable}
-                className="p-2 border-gray-400 border border-spacing-2 rounded bg-slate-200 focus:bg-slate-300"
+                className="p-2 border-gray-400 w-full resize-none border border-spacing-2 rounded bg-slate-200 focus:bg-slate-300"
                 value={props.value}
                 placeholder={props.placeholder}
                 onChange={(e) => props.onChange(e.target.value)}

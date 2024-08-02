@@ -1,13 +1,14 @@
-import { LoaderFunctionArgs } from "@remix-run/node";
-import { useLoaderData } from "@remix-run/react";
+import { ActionFunctionArgs, LoaderFunctionArgs } from "@remix-run/node";
+import { useActionData, useLoaderData } from "@remix-run/react";
 import { authenticator } from "~/services/auth.server";
 import { json } from "@remix-run/node";
-import { User } from "@prisma/client";
+import { User, Post } from "@prisma/client";
 import CreatePost from "~/components/CreatePost";
+import { useSubmit } from "@remix-run/react";
 
 type LoaderData = {
-    message: string;
     user: User;
+    posts?: Post[];
 };
 
 export async function loader({ request }: LoaderFunctionArgs) {
@@ -18,16 +19,33 @@ export async function loader({ request }: LoaderFunctionArgs) {
     const copy: User = { ...user } as Partial<User>;
     delete copy.password;
 
-    return json({ message: "ok", user: copy });
+    return json({ user: copy });
+}
+
+export async function action({ request }: ActionFunctionArgs) {
+    const user = await authenticator.isAuthenticated(request, {
+        failureRedirect: "/login",
+    });
+
+    const data = await request.formData();
+
+    console.log("Form Data", data);
+
+    return json({ message: "ok" });
 }
 
 export default function FeedPage() {
-    const { user, message } = useLoaderData<LoaderData>();
+    const submit = useSubmit();
+    const { user } = useLoaderData<LoaderData>();
+    const res = useActionData<typeof action>();
 
     return (
-        <main>
-            <h1>{user.email}'s Feed</h1>
-            <CreatePost />
+        <main className="">
+            <h1 className="text-3xl">Yours Feed</h1>
+            {/* feed area */}
+            {/* 2 modes - newest and following */}
+            <section></section>
+            <CreatePost submitFunc={submit} userId={user.id} />
         </main>
     );
 }
