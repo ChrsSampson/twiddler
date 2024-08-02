@@ -3,15 +3,9 @@ import { ActionFunctionArgs } from "@remix-run/node";
 import { Form } from "@remix-run/react";
 import Input from "~/components/ui/Input";
 import Button from "~/components/ui/Button";
-import { json } from "@remix-run/react";
 import { authenticator } from "~/services/auth.server";
 import { Link } from "@remix-run/react";
 import { useActionData } from "@remix-run/react";
-
-type RequestProps = {
-    email: string;
-    password: string;
-};
 
 export async function action({ request }: ActionFunctionArgs) {
     return await authenticator.authenticate("email", request, {
@@ -28,11 +22,12 @@ export default function LoginPage() {
     const [password, setPassword] = useState<string>("");
     const [error, setError] = useState<string>("");
 
-    console.log(submitResponse);
-
     return (
-        <section className="min-h-screen grid place-items-center">
-            <Form method="post" className="border border-gray-400 p-4 rounded-lg flex flex-col">
+        <section className="min-h-screen grid place-items-center bg-slate-300">
+            <Form
+                method="post"
+                className="border border-gray-400 p-4 rounded-lg flex flex-col bg-white"
+            >
                 <h1 className="text-2xl">Twiddler</h1>
                 {error && <h3 className="text-red-500 text-xl">{error}</h3>}
                 <Input name="email" label="Email" onChange={setEmail} value={email} />

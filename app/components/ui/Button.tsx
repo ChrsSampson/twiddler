@@ -1,6 +1,7 @@
 type ButtonProps = {
     children?: React.ReactNode;
     onClick?: () => void;
+    disable?: boolean;
     type?: "button" | "submit" | "reset";
 };
 
@@ -17,17 +18,28 @@ export default function Button(props: ButtonProps) {
         // the trailing spaces are important here
         const submitStyle = "bg-blue-500 hover:bg-blue-600 ";
         const normalStyle = "bg-green-500 hover:bg-green-700 ";
+        // override the interactive styles
+        const normalDisabled = "bg-slate-300 text-slate-400 hover:text-slate-400 ";
 
         switch (props.type) {
             case "submit":
                 return submitStyle + baseStyle;
             default:
-                return normalStyle + baseStyle;
+                if (props.disable) {
+                    return normalDisabled + baseStyle;
+                } else {
+                    return normalStyle + baseStyle;
+                }
         }
     }
 
     return (
-        <button className={getStyle()} type={props.type || "button"} onClick={() => clickHandler()}>
+        <button
+            className={getStyle()}
+            disabled={props.disable}
+            type={props.type || "button"}
+            onClick={() => clickHandler()}
+        >
             {props.children}
         </button>
     );

@@ -39,7 +39,7 @@ export default function FeedPage() {
 
     return (
         <main className="">
-            <h1 className="text-3xl">Yours Feed</h1>
+            <h1 className="text-3xl">Your Feed</h1>
             {/* feed area */}
             {/* 2 modes - newest and following */}
             <section></section>
