@@ -8,6 +8,8 @@ export function loader() {
     return redirect("/feed");
 }
 
+// this nees to go away - remix does not supoprt "rest api" style routes
+
 // this is the post route for the CreatePost Component so it can post from anywhere in the app
 export async function action({ request }: ActionFunctionArgs) {
     try {

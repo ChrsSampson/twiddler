@@ -29,8 +29,6 @@ export async function action({ request }: ActionFunctionArgs) {
 
     const data = await request.formData();
 
-    console.log("Form Data", data);
-
     return json({ message: "ok" });
 }
 

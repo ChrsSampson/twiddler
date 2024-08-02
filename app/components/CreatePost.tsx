@@ -9,6 +9,10 @@ type Props = {
     userId: number;
 };
 
+// the submit with need changed, I can not get any data back from the submit even because its posting to a non-sibling route
+// the submit event will just get called here and defined in the parent component
+// at least thats what the docs say
+
 export default function CreatePost({ submitFunc, userId }: Props) {
     const [title, setTitle] = useState<string>("");
     const [body, setBody] = useState<string>("");
