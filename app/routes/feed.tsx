@@ -3,6 +3,7 @@ import { useLoaderData } from "@remix-run/react";
 import { authenticator } from "~/services/auth.server";
 import { json } from "@remix-run/node";
 import { User } from "@prisma/client";
+import CreatePost from "~/components/CreatePost";
 
 type LoaderData = {
     message: string;
@@ -26,6 +27,7 @@ export default function FeedPage() {
     return (
         <main>
             <h1>{user.email}'s Feed</h1>
+            <CreatePost />
         </main>
     );
 }

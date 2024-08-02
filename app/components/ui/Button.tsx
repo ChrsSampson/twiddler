@@ -12,8 +12,9 @@ export default function Button(props: ButtonProps) {
         };
 
     function getStyle() {
-        const baseStyle = "rounded px-[1em] py-[.5em] hover:text-slate-200";
+        const baseStyle = "text-center rounded px-[1em] py-[.5em] hover:text-slate-200";
 
+        // the trailing spaces are important here
         const submitStyle = "bg-blue-500 hover:bg-blue-600 ";
         const normalStyle = "bg-green-500 hover:bg-green-700 ";
 
