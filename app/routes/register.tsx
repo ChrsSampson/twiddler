@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { prisma } from "../prisma";
 import { ActionFunctionArgs } from "@remix-run/node";
-import { Form, redirect } from "@remix-run/react";
+import { Form, redirect, useActionData } from "@remix-run/react";
 import Input from "~/components/ui/Input";
 import Button from "~/components/ui/Button";
 import { useSubmit } from "@remix-run/react";
@@ -37,8 +37,14 @@ export async function action({ request }: ActionFunctionArgs) {
             data.email = data.email.toLowerCase();
 
             const user = await prisma.user.create({
-                data: { email: data.email, password: data.password, username: name },
+                data: {
+                    email: data.email,
+                    password: data.password,
+                    username: name,
+                },
             });
+
+            console.log(user);
 
             return redirect("/login?flash=Account%20Created");
         }
@@ -62,12 +68,17 @@ function matchPassword(p1: string, p2: string): boolean {
 
 export default function RegisterPage() {
     const submit = useSubmit();
+    const result = useActionData();
 
     const [email, setEmail] = useState<string>("");
     const [username, setUsername] = useState<string>("");
     const [password, setPassword] = useState<string>("");
     const [password2, setPassword2] = useState<string>("");
     const [error, setError] = useState<string>("");
+
+    const actionError = result ? result.error : null;
+
+    console.log(actionError);
 
     const [currentPage, setPage] = useState<number>(0);
 
@@ -86,6 +97,8 @@ export default function RegisterPage() {
     ];
 
     async function handleSubmit(e: React.SyntheticEvent) {
+        e.preventDefault();
+
         if (error) {
             setError("");
         }
@@ -101,12 +114,14 @@ export default function RegisterPage() {
 
             const data = { email, password };
 
-            const res = await submit(data, { method: "POST", encType: "application/json" });
+            const res = await submit(data, {
+                method: "POST",
+                encType: "application/json",
+            });
 
             console.log(res);
         } catch (err) {
             if (err instanceof Error) {
-                console.log(err);
                 setError(err.message);
             }
         }
@@ -115,29 +130,39 @@ export default function RegisterPage() {
     useEffect(() => {
         setTimeout(() => {
             setError("");
-        }, 4000);
+        }, 5000);
     }, [error]);
-
-    console.log(currentPage);
 
     return (
         <section className="min-h-screen grid place-items-center bg-slate-300">
             <Form
                 className="border border-gray-400 p-5 rounded-lg flex flex-col bg-white"
-                onSubmit={handleSubmit}
+                onSubmit={(e) => handleSubmit(e)}
             >
                 <h1 className="text-2xl">User Registration</h1>
                 {error && <h3 className="text-red-500 text-xl">{error}</h3>}
+                {actionError && (
+                    <h3 className="text-red-500 text-xl">{actionError}</h3>
+                )}
                 {pages[currentPage]}
-                <Link to="/login" className="text-center text-slate-600 hover:text-slate-900">
-                    <sub className="hover:underline">Already have an Account?</sub>
+                <Link
+                    to="/login"
+                    className="text-center text-slate-600 hover:text-slate-900"
+                >
+                    <sub className="hover:underline">
+                        Already have an Account?
+                    </sub>
                 </Link>
             </Form>
         </section>
     );
 }
 
-function RegisterPage1({ emailState, usernameState, advance }: RegisterPage1Props) {
+function RegisterPage1({
+    emailState,
+    usernameState,
+    advance,
+}: RegisterPage1Props) {
     const [email, setEmail] = emailState;
     const [username, setUsername] = usernameState;
 
@@ -153,14 +178,16 @@ function RegisterPage1({ emailState, usernameState, advance }: RegisterPage1Prop
                 setValid(false);
             }
         }
-
-        console.log(valid);
     }, [email]);
 
     return (
         <div>
             <Input label="Email" onChange={setEmail} value={email} />
-            <Input label="Display Name" onChange={setUsername} value={username} />
+            <Input
+                label="Display Name"
+                onChange={setUsername}
+                value={username}
+            />
             <div className="flex justify-end">
                 <Button type="button" onClick={() => advance()} disable={valid}>
                     Next
@@ -170,7 +197,12 @@ function RegisterPage1({ emailState, usernameState, advance }: RegisterPage1Prop
     );
 }
 
-function RegisterPage2({ passwordState, passwordState2, onSubmit, previous }: RegisterPage2Props) {
+function RegisterPage2({
+    passwordState,
+    passwordState2,
+    onSubmit,
+    previous,
+}: RegisterPage2Props) {
     const [password, setPassword] = passwordState;
     const [password2, setPassword2] = passwordState2;
     const [reveal, setReveal] = useState<boolean>(false);

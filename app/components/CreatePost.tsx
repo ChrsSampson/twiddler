@@ -1,4 +1,9 @@
-import { Form, SubmitFunction, useActionData, useSubmit } from "@remix-run/react";
+import {
+    Form,
+    SubmitFunction,
+    useActionData,
+    useSubmit,
+} from "@remix-run/react";
 import Input from "./ui/Input";
 import Button from "./ui/Button";
 import { useState } from "react";
@@ -46,7 +51,12 @@ export default function CreatePost({ submitFunc, userId }: Props) {
                         </button>
                     </div>
                     <div className="flex flex-col justify-center">
-                        <Input name="title" label="Title" value={title} onChange={setTitle} />
+                        <Input
+                            name="title"
+                            label="Title"
+                            value={title}
+                            onChange={setTitle}
+                        />
                         <Textarea
                             placeholder="Whats Happening?"
                             name="body"
@@ -65,7 +75,7 @@ export default function CreatePost({ submitFunc, userId }: Props) {
         return (
             <button
                 onClick={() => setShow(!show)}
-                className=" absolute p-2 border rounded-full text-2xl bg-blue-500 hover:bg-blue-600"
+                className=" absolute bottom-10 right-10 p-4 border rounded-full text-2xl bg-blue-500 hover:bg-blue-600"
             >
                 ➕
             </button>

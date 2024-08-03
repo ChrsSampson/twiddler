@@ -1,17 +1,8 @@
-// this needs alot of work
+import { profanity, Profanity } from "@2toad/profanity";
+
+// outsourced
 export default function profanityFilter(words: string) {
-    const collection = Array.from(words);
-
-    const filtered = collection.map((word) => {
-        blacklist.some((word) => {
-            console.log("Bad Word:", word);
-            const w = Array.from(word);
-            const sensored = w.fill("*", 1);
-            return sensored.join("");
-        });
-    });
-
-    return filtered.join("");
+    return profanity.censor(words);
 }
 
 const blacklist = [
