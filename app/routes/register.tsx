@@ -8,11 +8,20 @@ import { useSubmit } from "@remix-run/react";
 import { json } from "@remix-run/react";
 import { Link } from "@remix-run/react";
 import generateName from "~/lib/generateName";
+import getAvatar from "~/lib/getAvatar";
+
+export const meta: MetaFunction = () => {
+    return [
+        { title: "Twiddler | Signup" },
+        { name: "Create new Account", content: "Whats Going On?" },
+    ];
+};
 
 type RequestProps = {
     email: string;
     username: string;
     password: string;
+    avatar?: string;
 };
 
 type RegisterPage1Props = {
@@ -33,18 +42,25 @@ export async function action({ request }: ActionFunctionArgs) {
         if (request.method == "POST") {
             const data: Promise<RequestProps> = await request.json();
 
+            const avatar = getAvatar();
             const name = data.username || generateName(data.email);
+
             data.email = data.email.toLowerCase();
+
+            const profile = await prisma.userProfile.create({
+                data: {
+                    username: name,
+                    avatar: avatar,
+                },
+            });
 
             const user = await prisma.user.create({
                 data: {
                     email: data.email,
                     password: data.password,
-                    username: name,
+                    profile_id: profile.id,
                 },
             });
-
-            console.log(user);
 
             return redirect("/login?flash=Account%20Created");
         }
@@ -77,8 +93,6 @@ export default function RegisterPage() {
     const [error, setError] = useState<string>("");
 
     const actionError = result ? result.error : null;
-
-    console.log(actionError);
 
     const [currentPage, setPage] = useState<number>(0);
 
@@ -140,29 +154,20 @@ export default function RegisterPage() {
                 onSubmit={(e) => handleSubmit(e)}
             >
                 <h1 className="text-2xl">User Registration</h1>
-                {error && <h3 className="text-red-500 text-xl">{error}</h3>}
-                {actionError && (
-                    <h3 className="text-red-500 text-xl">{actionError}</h3>
-                )}
+                <section className="max-w-[20em]">
+                    {error && <p className="text-red-500 text-xl">{error}</p>}
+                    {actionError && <p className="text-red-500 text-xl">{actionError}</p>}
+                </section>
                 {pages[currentPage]}
-                <Link
-                    to="/login"
-                    className="text-center text-slate-600 hover:text-slate-900"
-                >
-                    <sub className="hover:underline">
-                        Already have an Account?
-                    </sub>
+                <Link to="/login" className="text-center text-slate-600 hover:text-slate-900">
+                    <sub className="hover:underline">Already have an Account?</sub>
                 </Link>
             </Form>
         </section>
     );
 }
 
-function RegisterPage1({
-    emailState,
-    usernameState,
-    advance,
-}: RegisterPage1Props) {
+function RegisterPage1({ emailState, usernameState, advance }: RegisterPage1Props) {
     const [email, setEmail] = emailState;
     const [username, setUsername] = usernameState;
 
@@ -183,11 +188,7 @@ function RegisterPage1({
     return (
         <div>
             <Input label="Email" onChange={setEmail} value={email} />
-            <Input
-                label="Display Name"
-                onChange={setUsername}
-                value={username}
-            />
+            <Input label="Display Name" onChange={setUsername} value={username} />
             <div className="flex justify-end">
                 <Button type="button" onClick={() => advance()} disable={valid}>
                     Next
@@ -197,12 +198,7 @@ function RegisterPage1({
     );
 }
 
-function RegisterPage2({
-    passwordState,
-    passwordState2,
-    onSubmit,
-    previous,
-}: RegisterPage2Props) {
+function RegisterPage2({ passwordState, passwordState2, onSubmit, previous }: RegisterPage2Props) {
     const [password, setPassword] = passwordState;
     const [password2, setPassword2] = passwordState2;
     const [reveal, setReveal] = useState<boolean>(false);

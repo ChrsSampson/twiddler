@@ -16,10 +16,19 @@ datasource db {
 model User {
   id Int @id @default(autoincrement()) @unique
   email String @unique
-  username String @unique
   password String
   posts Post[]
+  profile_id Int @unique
+  profile UserProfile @relation(fields: [profile_id], references: [id], onDelete: Cascade)
 }
+
+model UserProfile{
+  id Int @id @default(autoincrement()) @unique
+  user User?
+  avatar String
+  username String @unique
+}
+
 
 
 model Post {
@@ -28,4 +37,5 @@ model Post {
   body String?
   author_id Int
   author User @relation(fields: [author_id], references: [id])
+  created_at DateTime @default(now())
 }

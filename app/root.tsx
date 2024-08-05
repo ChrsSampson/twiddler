@@ -1,4 +1,12 @@
-import { Links, Meta, Outlet, Scripts, ScrollRestoration, useRouteError } from "@remix-run/react";
+import {
+    Links,
+    Meta,
+    Link,
+    Outlet,
+    Scripts,
+    ScrollRestoration,
+    useRouteError,
+} from "@remix-run/react";
 import "./tailwind.css";
 
 export function Layout({ children }: { children: React.ReactNode }) {
@@ -39,6 +47,12 @@ export function ErrorBoundry() {
                 <p>{JSON.stringify(error)}</p>
                 <ScrollRestoration />
                 <Scripts />
+                <footer>
+                    <Link className="text-3xl" to="/policy">
+                        Policies
+                    </Link>
+                    <Link to="/">Home</Link>
+                </footer>
             </body>
         </html>
     );

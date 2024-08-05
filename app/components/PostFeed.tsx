@@ -2,11 +2,16 @@ import { Post } from "@prisma/client";
 import PostDisplay from "./PostDisplay";
 import { useId } from "react";
 
-export default function PostFeed({ posts }: { posts: Post[] }) {
-    if (posts.length < 1) {
+type FeedProps = {
+    posts: Post[];
+    placeholder?: string;
+};
+
+export default function PostFeed({ posts, placeholder }: FeedProps) {
+    if (posts && posts.length < 1) {
         return (
             <section className="min-w-screen">
-                <Placeholder />
+                <Placeholder message={placeholder} />
             </section>
         );
     } else {
@@ -20,10 +25,16 @@ export default function PostFeed({ posts }: { posts: Post[] }) {
     }
 }
 
-function Placeholder() {
+type PlaceholderProps = {
+    message?: string;
+};
+
+function Placeholder({ message }: PlaceholderProps) {
     return (
-        <article className="border border-dashed rounded p-4 border-slate-300">
-            <p className="text-lg text-center">There is nothing here</p>
+        <article className="border border-dashed rounded p-4 min-h-[20em] grid place-items-center border-slate-300">
+            <p className="text-2xl text-slate-500 text-center">
+                {message || "There is nothing here."}
+            </p>
         </article>
     );
 }

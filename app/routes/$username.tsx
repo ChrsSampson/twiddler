@@ -1,18 +1,15 @@
-// /profile/[username]
+// /[username]
 
 import { ActionFunctionArgs, LoaderFunctionArgs, redirect } from "@remix-run/node";
 import { authenticator } from "~/services/auth.server";
 import { json } from "@remix-run/node";
-import { useActionData, useLoaderData } from "@remix-run/react";
-import { User, UserProfile } from "@prisma/client";
+import { User, UserProfile, Post } from "@prisma/client";
 import { prisma } from "~/prisma";
-import { Form } from "@remix-run/react";
-import Button from "~/components/ui/Button";
+import { useLoaderData } from "@remix-run/react";
+import PostFeed from "~/components/PostFeed";
 
 export async function loader({ request, params }: LoaderFunctionArgs) {
-    const user = await authenticator.isAuthenticated(request, {
-        failureRedirect: "/login",
-    });
+    const user = await authenticator.isAuthenticated(request, {});
 
     const { username } = params;
 
@@ -29,7 +26,20 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
         return redirect("/404");
     }
 
-    return json({ profile });
+    const posts = await prisma.post.findMany({
+        where: {
+            author_id: profile.user?.id,
+        },
+        include: {
+            author: {
+                include: {
+                    profile: true,
+                },
+            },
+        },
+    });
+
+    return json({ profile, userPosts: posts });
 }
 
 export async function action({ request }: ActionFunctionArgs) {
@@ -40,23 +50,21 @@ export async function action({ request }: ActionFunctionArgs) {
 
 type LoaderData = {
     profile: UserProfile;
-    profileUser?: User;
+    userPosts: Post[];
 };
 
 export default function ProfilePage() {
-    const { profile } = useLoaderData<LoaderData>();
+    const { profile, userPosts } = useLoaderData<LoaderData>();
 
     return (
-        <main className="flex flex-col">
-            <h1 className="text-2xl">Profile</h1>
+        <main className="flex flex-col p-6">
             <section className="flex p-4 gap-4 place-items-center bg-slate-300 rounded">
                 <img height={40} width={40} className="rounded-full" src={profile.avatar} />
                 <h3 className="text-lg">{profile.username}</h3>
             </section>
             <section>
-                <Form>
-                    <Button type="submit">Logout</Button>
-                </Form>
+                <h3 className="text-2xl">Posts</h3>
+                <PostFeed posts={userPosts} placeholder="This user has not made any posts yet." />
             </section>
         </main>
     );

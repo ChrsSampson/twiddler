@@ -6,8 +6,15 @@ import { User, Post } from "@prisma/client";
 import CreatePost from "~/components/CreatePost";
 import { useSubmit } from "@remix-run/react";
 import { prisma } from "~/prisma";
-import PostDisplay from "~/components/Post";
 import PostFeed from "~/components/PostFeed";
+import UserBug from "../components/UserBug";
+
+export const meta: MetaFunction = () => {
+    return [
+        { title: "Twiddler | Your Feed" },
+        { name: "Twiddler Feed", content: "Whats Going On?" },
+    ];
+};
 
 type LoaderData = {
     user: User;
@@ -21,11 +28,24 @@ export async function loader({ request }: LoaderFunctionArgs) {
 
     const posts = await prisma.post.findMany({
         include: {
-            author: true,
+            author: {
+                include: {
+                    profile: true,
+                },
+            },
         },
     });
 
-    return json({ user, posts });
+    const completeUser = await prisma.user.findUnique({
+        where: {
+            id: user.id,
+        },
+        include: {
+            profile: true,
+        },
+    });
+
+    return json({ user: completeUser, posts });
 }
 
 export async function action({ request }: ActionFunctionArgs) {
@@ -45,10 +65,11 @@ export default function FeedPage() {
 
     return (
         <main className="grid grid-cols-6 px-[10em]">
-            <section className="col-span-1 p-4">
+            <section className="col-span-1 p-4 border-r-2">
                 <h1 className="text-3xl">Your Feed</h1>
+                <UserBug user={user} />
             </section>
-            <section className="flex flex-col gap-2 p-4 col-span-4">
+            <section className="flex flex-col gap-2 p-4 col-span-4 overflow-y-auto">
                 <PostFeed posts={posts} />
             </section>
             <CreatePost submitFunc={submit} userId={user.id} />

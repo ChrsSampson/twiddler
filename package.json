@@ -12,6 +12,8 @@
     },
     "dependencies": {
         "@2toad/profanity": "^2.2.0",
+        "@dicebear/collection": "^9.2.1",
+        "@dicebear/core": "^9.2.1",
         "@prisma/client": "^5.17.0",
         "@remix-run/node": "^2.10.3",
         "@remix-run/react": "^2.10.3",

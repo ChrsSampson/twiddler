@@ -26,6 +26,8 @@ export default function CreatePost({ submitFunc, userId }: Props) {
             method: "POST",
             encType: "application/x-www-form-urlencoded",
         });
+
+        setShow(false);
     }
 
     if (show) {
@@ -35,11 +37,13 @@ export default function CreatePost({ submitFunc, userId }: Props) {
                     className="border bg-white border-gray-400 rounded-lg p-2 w-1/3"
                     action="/posts"
                     navigate={false}
-                    onSubmit={handleSubmit}>
+                    onSubmit={handleSubmit}
+                >
                     <div>
                         <button
                             className="hover:bg-[#c2c2c2] rounded-full p-2"
-                            onClick={() => setShow(false)}>
+                            onClick={() => setShow(false)}
+                        >
                             ❌
                         </button>
                     </div>
@@ -63,7 +67,8 @@ export default function CreatePost({ submitFunc, userId }: Props) {
         return (
             <button
                 onClick={() => setShow(!show)}
-                className=" absolute bottom-10 right-10 p-4 border rounded-full text-2xl bg-blue-500 hover:bg-blue-600">
+                className=" absolute bottom-10 right-10 p-4 border rounded-full text-2xl bg-blue-500 hover:bg-blue-600"
+            >
                 ➕
             </button>
         );
