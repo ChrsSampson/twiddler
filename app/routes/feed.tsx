@@ -1,9 +1,5 @@
-import {
-    ActionFunctionArgs,
-    LoaderFunctionArgs,
-    redirect,
-} from "@remix-run/node";
-import { useActionData, useLoaderData } from "@remix-run/react";
+import { ActionFunctionArgs, LoaderFunctionArgs, redirect } from "@remix-run/node";
+import { useActionData, useLoaderData, useRouteError } from "@remix-run/react";
 import { authenticator } from "~/services/auth.server";
 import { json } from "@remix-run/node";
 import { User, Post } from "@prisma/client";
@@ -11,6 +7,7 @@ import CreatePost from "~/components/CreatePost";
 import { useSubmit } from "@remix-run/react";
 import { prisma } from "~/prisma";
 import PostDisplay from "~/components/Post";
+import PostFeed from "~/components/PostFeed";
 
 type LoaderData = {
     user: User;
@@ -47,19 +44,27 @@ export default function FeedPage() {
     const res = useActionData<typeof action>();
 
     return (
-        <main className="grid grid-cols-5 ">
-            {/* feed area */}
-            <section className="grid-span-1 p-4">
+        <main className="grid grid-cols-6 px-[10em]">
+            <section className="col-span-1 p-4">
                 <h1 className="text-3xl">Your Feed</h1>
             </section>
-            <section className="flex flex-col gap-2 p-4 grid-span-4">
-                {/* 2 modes - newest and following */}
-                {posts &&
-                    posts.map((post) => {
-                        return PostDisplay(post);
-                    })}
+            <section className="flex flex-col gap-2 p-4 col-span-4">
+                <PostFeed posts={posts} />
             </section>
             <CreatePost submitFunc={submit} userId={user.id} />
+        </main>
+    );
+}
+
+export function ErrorBoundry() {
+    const error = useRouteError();
+    return (
+        <main>
+            <div>
+                <h1>🚽 Oh Poop 💩</h1>
+                <h3>Something Went Wrong</h3>
+                <p>{JSON.stringify(error)}</p>
+            </div>
         </main>
     );
 }
