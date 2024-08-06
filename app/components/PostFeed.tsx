@@ -1,6 +1,7 @@
 import { Post } from "@prisma/client";
-import PostDisplay from "./PostDisplay";
+// import PostDisplay from "./PostDisplay";
 import { useId } from "react";
+import PostDisplay from "~/routes/posts";
 
 type FeedProps = {
     posts: Post[];
@@ -16,7 +17,7 @@ export default function PostFeed({ posts, placeholder }: FeedProps) {
         );
     } else {
         return (
-            <section className="flex flex-col gap-3">
+            <section className="flex flex-col p-2 gap-3">
                 {posts.map((post: Post) => {
                     return <PostDisplay key={useId()} data={post} />;
                 })}

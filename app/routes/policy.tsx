@@ -44,6 +44,10 @@ export default function PolicyPage() {
                         by case basis. Posts will be subjected to community moderation and
                         subsiquently banned upon recieving a high amount of reports from other users
                     </p>
+                    <p>
+                        Currently there is no appeal proccess so all bans and content removals are
+                        final.
+                    </p>
                     <p>1:) No hate speech</p>
                     <p>2:) No Death Threats</p>
                     <p>4:) No Illegal Content</p>

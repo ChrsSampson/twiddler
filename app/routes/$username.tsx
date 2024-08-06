@@ -7,9 +7,10 @@ import { User, UserProfile, Post } from "@prisma/client";
 import { prisma } from "~/prisma";
 import { useLoaderData } from "@remix-run/react";
 import PostFeed from "~/components/PostFeed";
+import Button from "~/components/ui/Button";
 
 export async function loader({ request, params }: LoaderFunctionArgs) {
-    const user = await authenticator.isAuthenticated(request, {});
+    const currentUser = await authenticator.isAuthenticated(request, {});
 
     const { username } = params;
 
@@ -42,12 +43,6 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
     return json({ profile, userPosts: posts });
 }
 
-export async function action({ request }: ActionFunctionArgs) {
-    return await authenticator.logout(request, {
-        redirectTo: "/",
-    });
-}
-
 type LoaderData = {
     profile: UserProfile;
     userPosts: Post[];
@@ -58,10 +53,13 @@ export default function ProfilePage() {
 
     return (
         <main className="flex flex-col p-6">
-            <section className="flex p-4 gap-4 place-items-center bg-slate-300 rounded">
-                <img height={40} width={40} className="rounded-full" src={profile.avatar} />
-                <h3 className="text-lg">{profile.username}</h3>
-            </section>
+            <div className="flex p-4 gap-4 place-items-center justify-between bg-slate-300 rounded">
+                <section className="flex p-4 gap-4 place-items-center bg-slate-300 rounded">
+                    <img height={40} width={40} className="rounded-full" src={profile.avatar} />
+                    <h3 className="text-lg">{profile.username}</h3>
+                </section>
+                {profile && <Button>Follow</Button>}
+            </div>
             <section>
                 <h3 className="text-2xl">Posts</h3>
                 <PostFeed posts={userPosts} placeholder="This user has not made any posts yet." />

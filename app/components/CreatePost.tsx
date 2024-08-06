@@ -25,6 +25,8 @@ export default function CreatePost({ submitFunc, userId }: Props) {
             action: "/posts",
             method: "POST",
             encType: "application/x-www-form-urlencoded",
+            navigate: false,
+            replace: true,
         });
 
         setShow(false);

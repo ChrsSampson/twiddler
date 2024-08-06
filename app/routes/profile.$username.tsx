@@ -1,10 +1,6 @@
 // /profile/[username]
 
-import {
-    ActionFunctionArgs,
-    LoaderFunctionArgs,
-    redirect,
-} from "@remix-run/node";
+import { ActionFunctionArgs, LoaderFunctionArgs, redirect } from "@remix-run/node";
 import { authenticator } from "~/services/auth.server";
 import { json } from "@remix-run/node";
 import { useActionData, useLoaderData } from "@remix-run/react";
@@ -13,6 +9,7 @@ import { prisma } from "~/prisma";
 import { Form } from "@remix-run/react";
 import Button from "~/components/ui/Button";
 import PostFeed from "~/components/PostFeed";
+import LogoutButton from "./logout/route";
 
 export async function loader({ request, params }: LoaderFunctionArgs) {
     const user = await authenticator.isAuthenticated(request, {
@@ -90,35 +87,25 @@ export default function ProfilePage() {
             <h1 className="text-2xl">Profile</h1>
             <section className="flex p-4 gap-4 place-items-center justify-between bg-slate-300 rounded">
                 <div className="flex p-4 gap-4 place-items-center bg-slate-300 rounded">
-                    <img
-                        height={40}
-                        width={40}
-                        className="rounded-full"
-                        src={profile.avatar}
-                    />
+                    <img height={40} width={40} className="rounded-full" src={profile.avatar} />
                     <h3 className="text-lg">
                         {profile.username} <strong>(YOU)</strong>
                     </h3>
                 </div>
                 <section>
-                    <Form method="post">
-                        <Button type="submit">Logout</Button>
-                    </Form>
+                    <LogoutButton />
                 </section>
             </section>
             <section className="py-6">
-                <PostFeed
-                    posts={posts}
-                    placeholder="You have not made any posts yet."
-                />
+                <PostFeed posts={posts} placeholder="You have not made any posts yet." />
             </section>
             <div className="flex gap-2">
                 <section className=" flex gap-5 p-4 place-items-center rounded-lg border border-red-400">
-                    <h4 className="text-red-400 font-bold text-lg">
-                        Danger Zone
-                    </h4>
+                    <h4 className="text-red-400 font-bold text-lg">Danger Zone</h4>
                     <Form method="delete">
-                        <Button type="submit">Delete Account</Button>
+                        <Button variant="danger" type="submit">
+                            Delete Account
+                        </Button>
                     </Form>
                 </section>
             </div>
