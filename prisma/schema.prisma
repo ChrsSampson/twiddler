@@ -29,8 +29,6 @@ model UserProfile{
   username String @unique
 }
 
-
-
 model Post {
   id Int @id @default(autoincrement()) @unique
   title String

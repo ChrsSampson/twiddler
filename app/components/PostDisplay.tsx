@@ -7,13 +7,13 @@ type PostProps = {
 export default function PostDisplay({ data }: PostProps) {
     const date = new Date(data.created_at).toLocaleDateString();
 
-    console.log("POST", data);
-
     return (
         <article className="border w-full rounded p-6 border-slate-300">
             <div className="flex justify-between mb-4">
                 <Link to={`/${data.author.profile.username}`}>
-                    <sub className="text-slate-500">{data.author?.profile.username}</sub>
+                    <sub className="text-slate-500">
+                        {data.author?.profile.username}
+                    </sub>
                 </Link>
                 <sub>{date}</sub>
             </div>

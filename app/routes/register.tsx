@@ -88,6 +88,7 @@ export default function RegisterPage() {
 
     const [email, setEmail] = useState<string>("");
     const [username, setUsername] = useState<string>("");
+
     const [password, setPassword] = useState<string>("");
     const [password2, setPassword2] = useState<string>("");
     const [error, setError] = useState<string>("");
@@ -95,6 +96,8 @@ export default function RegisterPage() {
     const actionError = result ? result.error : null;
 
     const [currentPage, setPage] = useState<number>(0);
+
+    console.log(username);
 
     const pages = [
         <RegisterPage1
@@ -126,7 +129,7 @@ export default function RegisterPage() {
                 throw new Error("Email cannot be empty.");
             }
 
-            const data = { email, password };
+            const data = { email, username, password };
 
             const res = await submit(data, {
                 method: "POST",
@@ -156,18 +159,29 @@ export default function RegisterPage() {
                 <h1 className="text-2xl">User Registration</h1>
                 <section className="max-w-[20em]">
                     {error && <p className="text-red-500 text-xl">{error}</p>}
-                    {actionError && <p className="text-red-500 text-xl">{actionError}</p>}
+                    {actionError && (
+                        <p className="text-red-500 text-xl">{actionError}</p>
+                    )}
                 </section>
                 {pages[currentPage]}
-                <Link to="/login" className="text-center text-slate-600 hover:text-slate-900">
-                    <sub className="hover:underline">Already have an Account?</sub>
+                <Link
+                    to="/login"
+                    className="text-center text-slate-600 hover:text-slate-900"
+                >
+                    <sub className="hover:underline">
+                        Already have an Account?
+                    </sub>
                 </Link>
             </Form>
         </section>
     );
 }
 
-function RegisterPage1({ emailState, usernameState, advance }: RegisterPage1Props) {
+function RegisterPage1({
+    emailState,
+    usernameState,
+    advance,
+}: RegisterPage1Props) {
     const [email, setEmail] = emailState;
     const [username, setUsername] = usernameState;
 
@@ -188,7 +202,11 @@ function RegisterPage1({ emailState, usernameState, advance }: RegisterPage1Prop
     return (
         <div>
             <Input label="Email" onChange={setEmail} value={email} />
-            <Input label="Display Name" onChange={setUsername} value={username} />
+            <Input
+                label="Display Name"
+                onChange={setUsername}
+                value={username}
+            />
             <div className="flex justify-end">
                 <Button type="button" onClick={() => advance()} disable={valid}>
                     Next
@@ -198,7 +216,12 @@ function RegisterPage1({ emailState, usernameState, advance }: RegisterPage1Prop
     );
 }
 
-function RegisterPage2({ passwordState, passwordState2, onSubmit, previous }: RegisterPage2Props) {
+function RegisterPage2({
+    passwordState,
+    passwordState2,
+    onSubmit,
+    previous,
+}: RegisterPage2Props) {
     const [password, setPassword] = passwordState;
     const [password2, setPassword2] = passwordState2;
     const [reveal, setReveal] = useState<boolean>(false);
