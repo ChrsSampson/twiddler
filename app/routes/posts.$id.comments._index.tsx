@@ -3,18 +3,18 @@ import { prisma } from "~/prisma";
 import PostDisplay from "./_posts";
 import { User, Post } from "@prisma/client";
 import { authenticator } from "~/services/auth.server";
-import { redirect, json } from "@remix-run/node";
-import { useLoaderData, useRouteError } from "@remix-run/react";
+import { redirect, json, ActionFunctionArgs } from "@remix-run/node";
+import { useLoaderData, useRouteError, useSubmit } from "@remix-run/react";
 import Input from "~/components/ui/Input";
 import Button from "~/components/ui/Button";
 import { Form } from "@remix-run/react";
+import { useState } from "react";
+import CommentList from "~/components/CommentList";
 
 export async function loader({ request, params }: LoaderFunctionArgs) {
     const user = authenticator.isAuthenticated(request);
 
     const { id } = params;
-
-    console.log(id);
 
     const post = await prisma.post.findUniqueOrThrow({
         where: {
@@ -26,6 +26,7 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
                     profile: true,
                 },
             },
+            comments: true,
         },
     });
 
@@ -42,7 +43,29 @@ type PageProps = {
 };
 
 export default function PostCommentsPage() {
-    const { user, post } = useLoaderData<typeof loader>();
+    const submit = useSubmit();
+    const { user, post } = useLoaderData<PageProps>();
+
+    const [comment, setComment] = useState<string>("");
+
+    async function handleSubmit(e) {
+        e.preventDefault();
+
+        const data = {
+            body: comment,
+            author_id: Number(user.id),
+        };
+
+        await submit(data, {
+            encType: "application/x-www-form-urlencoded",
+            method: "post",
+            action: `/posts/${post.id}/comments`,
+            replace: true,
+            navigate: false,
+        });
+
+        setComment("");
+    }
 
     return (
         <main className="col-span-2">
@@ -50,20 +73,25 @@ export default function PostCommentsPage() {
                 {post && <PostDisplay data={post} />}
             </section>
             <section className="p-2">
-                {post.comments ? "Comments are here" : <CommentPlaceholder />}
+                {post.comments ? (
+                    <CommentList comments={post.comments} />
+                ) : (
+                    <CommentPlaceholder />
+                )}
             </section>
             <section className="p-2">
                 <Form
                     className="flex place-items-center gap-2 p-2 justify-between border rounded border-spacing-2 border-slate-300"
-                    method="post"
+                    onSubmit={(e) => handleSubmit(e)}
                 >
                     <Input
-                        onChange={() => {
-                            return;
-                        }}
+                        onChange={setComment}
+                        value={comment}
                         placeholder="Put in your 2 cents?"
                     />
-                    <Button>Submit</Button>
+                    <Button type="submit" variant="submit">
+                        Submit
+                    </Button>
                 </Form>
             </section>
         </main>

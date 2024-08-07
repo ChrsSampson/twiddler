@@ -5,6 +5,7 @@ import { authenticator } from "~/services/auth.server";
 import { json } from "@remix-run/react";
 import { useLoaderData } from "@remix-run/react";
 import { prisma } from "~/prisma";
+import { ActionFunctionArgs } from "@remix-run/node";
 
 export async function loader({ request, params }: LoaderFunctionArgs) {
     const user = await authenticator.isAuthenticated(request);
@@ -23,6 +24,26 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
     });
 
     return json({ user: fullUser });
+}
+
+export async function action({ request, params }: ActionFunctionArgs) {
+    const formData = await request.formData();
+
+    // post id
+    const { id } = params;
+
+    const comment_body = formData.get("body");
+    const post_id = formData.get("post");
+
+    const comment = await prisma.comments.create({
+        data: {
+            body: comment_body,
+            author_id: Number(id),
+            post_id,
+        },
+    });
+
+    return null;
 }
 
 export default function FeedLayout() {
