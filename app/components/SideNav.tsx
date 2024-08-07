@@ -9,8 +9,6 @@ type NavProps = {
 };
 
 export default function SideNav({ title, user }: NavProps) {
-    console.log(user);
-
     return (
         <nav className="flex flex-col gap-4 col-start-2 col-span-1">
             {title && <h1 className="text-3xl">{title}</h1>}

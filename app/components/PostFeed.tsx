@@ -1,7 +1,6 @@
 import { Post } from "@prisma/client";
-// import PostDisplay from "./PostDisplay";
 import { useId } from "react";
-import PostDisplay from "~/routes/posts";
+import PostDisplay from "~/routes/_posts";
 
 type FeedProps = {
     posts: Post[];
