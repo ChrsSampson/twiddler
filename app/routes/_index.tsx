@@ -45,7 +45,7 @@ export default function Index() {
         <div className="font-sans px-6 py-4 grid grid-cols-3 gap-4">
             <section className="col-span-1 border-r-2 border-slate-300 min-h-screen">
                 <div className="flex gap-4 place-items-center">
-                    <h1 className="text-4xl">Twiddler</h1>
+                    <h1 className="text-4xl">Kiwi</h1>
                     <FaKiwiBird size="2.5em" />
                 </div>
                 <ul className="list-disc mt-4 pl-6 space-y-2">

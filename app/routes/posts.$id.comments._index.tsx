@@ -10,6 +10,7 @@ import Button from "~/components/ui/Button";
 import { Form } from "@remix-run/react";
 import { useState } from "react";
 import CommentList from "~/components/CommentList";
+import { Link } from "@remix-run/react";
 
 export async function loader({ request, params }: LoaderFunctionArgs) {
     const user = authenticator.isAuthenticated(request);
@@ -26,7 +27,7 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
                     profile: true,
                 },
             },
-            comments: true,
+            comments: {},
         },
     });
 
@@ -51,48 +52,42 @@ export default function PostCommentsPage() {
     async function handleSubmit(e) {
         e.preventDefault();
 
-        const data = {
-            body: comment,
-            author_id: Number(user.id),
-        };
+        if (comment !== "") {
+            const data = {
+                body: comment,
+                author_id: Number(user.id),
+            };
 
-        await submit(data, {
-            encType: "application/x-www-form-urlencoded",
-            method: "post",
-            action: `/posts/${post.id}/comments`,
-            replace: true,
-            navigate: false,
-        });
+            await submit(data, {
+                encType: "application/x-www-form-urlencoded",
+                method: "post",
+                action: `/posts/${post.id}/comments`,
+                replace: true,
+                navigate: false,
+            });
 
-        setComment("");
+            setComment("");
+        }
     }
 
     return (
         <main className="col-span-2">
-            <section className="p-2">
-                {post && <PostDisplay data={post} />}
-            </section>
-            <section className="p-2">
-                {post.comments ? (
-                    <CommentList comments={post.comments} />
-                ) : (
-                    <CommentPlaceholder />
-                )}
-            </section>
-            <section className="p-2">
+            <section className="p-2">{post && <PostDisplay data={post} />}</section>
+
+            <section className="p-2 ">
                 <Form
                     className="flex place-items-center gap-2 p-2 justify-between border rounded border-spacing-2 border-slate-300"
                     onSubmit={(e) => handleSubmit(e)}
                 >
-                    <Input
-                        onChange={setComment}
-                        value={comment}
-                        placeholder="Put in your 2 cents?"
-                    />
+                    <Input onChange={setComment} value={comment} placeholder="Post your response" />
                     <Button type="submit" variant="submit">
                         Submit
                     </Button>
                 </Form>
+            </section>
+
+            <section className="p-2">
+                {post.comments ? <CommentList comments={post.comments} /> : <CommentPlaceholder />}
             </section>
         </main>
     );
@@ -105,9 +100,7 @@ function CommentPlaceholder() {
                 <p className="text-2xl text-slate-500 text-center">
                     Looks like there is nothing here.
                 </p>
-                <p className="text-2xl text-slate-500 text-center">
-                    Be the first to comment.
-                </p>
+                <p className="text-2xl text-slate-500 text-center">Be the first to comment.</p>
             </section>
         </article>
     );
@@ -121,6 +114,7 @@ export function ErrorBoundry() {
                 <h1>🚽 Oh Poop 💩</h1>
                 <h3>Something Went Wrong</h3>
                 <p>{JSON.stringify(error)}</p>
+                <Link to="/feed">Back</Link>
             </div>
         </main>
     );

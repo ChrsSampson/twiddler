@@ -44,7 +44,7 @@ export default function Post({ data }: PostProps) {
             <section className="p-6 mb-4">
                 <div className="flex justify-between mb-4">
                     <Link to={`/${data.author.profile.username}`}>
-                        <sub className="text-slate-500">
+                        <sub className="text-slate-500 hover:underline hover:font-bold">
                             {data.author?.profile.username}
                         </sub>
                     </Link>

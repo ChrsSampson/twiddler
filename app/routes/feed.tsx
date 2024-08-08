@@ -15,10 +15,7 @@ import { json } from "@remix-run/node";
 import { prisma } from "~/prisma";
 
 export const meta: MetaFunction = () => {
-    return [
-        { title: "Twiddler | Your Feed" },
-        { name: "Twiddler Feed", content: "Whats Going On?" },
-    ];
+    return [{ title: "Kiwi | Your Feed" }, { name: "Kiwi Feed", content: "Whats Going On?" }];
 };
 
 export async function loader({ request, params }: LoaderFunctionArgs) {

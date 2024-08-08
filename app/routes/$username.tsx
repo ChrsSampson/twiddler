@@ -67,5 +67,3 @@ export default function ProfilePage() {
         </main>
     );
 }
-
-function ProfileWidget(user: User) {}

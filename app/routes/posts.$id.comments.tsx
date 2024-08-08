@@ -6,6 +6,11 @@ import { json } from "@remix-run/react";
 import { useLoaderData } from "@remix-run/react";
 import { prisma } from "~/prisma";
 import { ActionFunctionArgs } from "@remix-run/node";
+import profanityFilter from "~/lib/profanityFilter";
+
+export const meta: MetaFunction = () => {
+    return [{ title: "Kiwi | Discussion" }, { name: "Kiwi Post", content: "Whats Going On?" }];
+};
 
 export async function loader({ request, params }: LoaderFunctionArgs) {
     const user = await authenticator.isAuthenticated(request);
@@ -26,24 +31,35 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
     return json({ user: fullUser });
 }
 
+// Post Route for Creating Comments
 export async function action({ request, params }: ActionFunctionArgs) {
-    const formData = await request.formData();
+    try {
+        const user = await authenticator.isAuthenticated(request);
 
-    // post id
-    const { id } = params;
+        const formData = await request.formData();
 
-    const comment_body = formData.get("body");
-    const post_id = formData.get("post");
+        // post id
+        const { id } = params;
 
-    const comment = await prisma.comments.create({
-        data: {
-            body: comment_body,
-            author_id: Number(id),
-            post_id,
-        },
-    });
+        const comment_body = formData.get("body");
+        const post_id = formData.get("post");
 
-    return null;
+        const filtered_body = profanityFilter(comment_body);
+
+        const comment = await prisma.comments.create({
+            data: {
+                body: filtered_body,
+                author_id: Number(user.id),
+                post_id: Number(id),
+            },
+        });
+
+        return null;
+    } catch (err) {
+        console.log(err);
+
+        return null;
+    }
 }
 
 export default function FeedLayout() {

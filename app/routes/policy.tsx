@@ -1,4 +1,6 @@
 import { MetaFunction } from "@remix-run/node";
+import Button from "~/components/ui/Button";
+import { Link } from "@remix-run/react";
 
 export const meta: MetaFunction = () => {
     return [
@@ -11,7 +13,12 @@ export default function PolicyPage() {
     return (
         <main className="grid place-items-center p-6 ">
             <section className="border border-slate-300 rounded-lg p-6 max-w-[65%]">
-                <h1 className="text-2xl">FAQ and Policies</h1>
+                <div className="flex gap-3 justify-between">
+                    <h1 className="text-2xl">FAQ and Policies</h1>
+                    <Link to="/">
+                        <Button>Back</Button>
+                    </Link>
+                </div>
                 <Article title="About">
                     <p>
                         This app was made to mimic a certain other website that shall not be named.

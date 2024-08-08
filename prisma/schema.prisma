@@ -45,6 +45,7 @@ model Post {
   created_at DateTime @default(now())
   comments Comments[]
   likes Int @default(1)
+  views Int @default(1)
   reports Int @default(0)
   liked_post LikedPosts[]
 }
@@ -66,4 +67,5 @@ model Comments {
   post Post @relation(fields: [post_id], references: [id])
   reports Int @default(0)
   likes Int @default(0)
+  created_at DateTime @default(now())
 }

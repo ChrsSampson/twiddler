@@ -1,10 +1,5 @@
 import { ActionFunctionArgs } from "@remix-run/node";
-import {
-    Form,
-    SubmitFunction,
-    useActionData,
-    useSubmit,
-} from "@remix-run/react";
+import { Form, SubmitFunction, useActionData, useSubmit } from "@remix-run/react";
 import Input from "~/components/ui/Input";
 import Button from "~/components/ui/Button";
 import { useState } from "react";
@@ -13,6 +8,7 @@ import { authenticator } from "~/services/auth.server";
 import { redirect } from "@remix-run/node";
 import profanityFilter from "~/lib/profanityFilter";
 import { prisma } from "~/prisma";
+import { FaPlus } from "react-icons/fa";
 import { json } from "@remix-run/node";
 
 type Props = {
@@ -95,12 +91,7 @@ export default function CreatePost({ userId }: [Props]) {
                         </button>
                     </div>
                     <div className="flex flex-col justify-center">
-                        <Input
-                            name="title"
-                            label="Title"
-                            value={title}
-                            onChange={setTitle}
-                        />
+                        <Input name="title" label="Title" value={title} onChange={setTitle} />
                         <Textarea
                             placeholder="Whats Happening?"
                             name="body"
@@ -119,9 +110,9 @@ export default function CreatePost({ userId }: [Props]) {
         return (
             <button
                 onClick={() => setShow(!show)}
-                className=" absolute bottom-10 right-10 p-4 border rounded-full text-2xl bg-blue-500 hover:bg-blue-600"
+                className="sticky bottom-20 left-20 p-4 border rounded-full hover:text-white text-2xl bg-blue-500 hover:bg-blue-600"
             >
-                ➕
+                <FaPlus />
             </button>
         );
     }
