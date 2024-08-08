@@ -6,7 +6,8 @@ import profanityFilter from "~/lib/profanityFilter";
 
 // this page should not allow people to browse to it
 export function loader() {
-    return redirect("/feed");
+    // return redirect("/feed");
+    return null;
 }
 
 // this nees to go away - remix does not supoprt "rest api" style routes
@@ -18,16 +19,10 @@ export function loader() {
 export async function action({ request, params }: ActionFunctionArgs) {
     try {
         const { id } = params;
+        const formData = await request.formData();
+        const key = formData.get("key");
 
-        if (request.method == "GET") {
-            const post = await getOne(Number(id));
-
-            return json({ post }, { status: 200 });
-        } else if (request.method == "DELETE") {
-            const res = await deleteOne(Number(id));
-
-            return json({ status: 204 }, { status: 204 });
-        }
+        console.log(id, key);
 
         return null;
     } catch (err) {

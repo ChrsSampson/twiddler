@@ -1,10 +1,7 @@
 // /profile/[username]
 
-import {
-    ActionFunctionArgs,
-    LoaderFunctionArgs,
-    redirect,
-} from "@remix-run/node";
+import { useState } from "react";
+import { ActionFunctionArgs, LoaderFunctionArgs, redirect } from "@remix-run/node";
 import { authenticator } from "~/services/auth.server";
 import { json } from "@remix-run/node";
 import { useActionData, useLoaderData } from "@remix-run/react";
@@ -12,42 +9,39 @@ import { User, UserProfile, Post } from "@prisma/client";
 import { prisma } from "~/prisma";
 import { Form } from "@remix-run/react";
 import Button from "~/components/ui/Button";
-import PostFeed from "~/components/PostFeed";
+import LogoutButton from "./logout/route";
+import { useSubmit } from "@remix-run/react";
+
+import { MetaFunction } from "@remix-run/node";
+import { Outlet } from "@remix-run/react";
+import SideNav from "~/components/SideNav";
+
+export const meta: MetaFunction = () => {
+    return [
+        { title: "Kiwi | Your Profile" },
+        { name: "Kiwi Profile Page", content: "Whats Going On?" },
+    ];
+};
 
 export async function loader({ request, params }: LoaderFunctionArgs) {
     const user = await authenticator.isAuthenticated(request, {
         failureRedirect: "/login",
     });
 
-    const { username } = params;
-
-    const profile = await prisma.userProfile.findUnique({
-        where: {
-            username: username,
-        },
-        include: {
-            user: true,
-        },
-    });
-
-    if (!profile || user.email != profile.user?.email) {
-        return redirect(`/${username}`);
+    if (!user) {
+        return redirect("/login?flash=You%20Must%20Login");
     }
 
-    const posts = await prisma.post.findMany({
+    const fullUser = await prisma.user.findUnique({
         where: {
-            author_id: profile.user?.id,
+            id: Number(user.id),
         },
         include: {
-            author: {
-                include: {
-                    profile: true,
-                },
-            },
+            profile: true,
         },
     });
 
-    return json({ profile, posts });
+    return json({ user: fullUser });
 }
 
 export async function action({ request }: ActionFunctionArgs) {
@@ -60,6 +54,21 @@ export async function action({ request }: ActionFunctionArgs) {
             redirectTo: "/",
         });
     } else if (request.method == "DELETE") {
+        // delete user comments
+        const c1 = await prisma.comments.deleteMany({
+            where: {
+                author_id: user.id,
+            },
+        });
+
+        // Delete all user posts
+        const p1 = await prisma.post.deleteMany({
+            where: {
+                author_id: user.id,
+            },
+        });
+
+        // delete user and user profile
         const res = await prisma.user.delete({
             where: {
                 id: user?.id,
@@ -78,52 +87,60 @@ export async function action({ request }: ActionFunctionArgs) {
 }
 
 type LoaderData = {
-    profile: UserProfile;
-    posts: Post[];
+    user: User;
 };
 
 export default function ProfilePage() {
-    const { profile, posts } = useLoaderData<LoaderData>();
+    const { user } = useLoaderData<LoaderData>();
 
     return (
-        <main className="flex flex-col p-6">
-            <h1 className="text-2xl">Profile</h1>
-            <section className="flex p-4 gap-4 place-items-center justify-between bg-slate-300 rounded">
-                <div className="flex p-4 gap-4 place-items-center bg-slate-300 rounded">
-                    <img
-                        height={40}
-                        width={40}
-                        className="rounded-full"
-                        src={profile.avatar}
-                    />
-                    <h3 className="text-lg">
-                        {profile.username} <strong>(YOU)</strong>
-                    </h3>
-                </div>
-                <section>
-                    <Form method="post">
-                        <Button type="submit">Logout</Button>
-                    </Form>
-                </section>
-            </section>
-            <section className="py-6">
-                <PostFeed
-                    posts={posts}
-                    placeholder="You have not made any posts yet."
-                />
-            </section>
-            <div className="flex gap-2">
-                <section className=" flex gap-5 p-4 place-items-center rounded-lg border border-red-400">
-                    <h4 className="text-red-400 font-bold text-lg">
-                        Danger Zone
-                    </h4>
-                    <Form method="delete">
-                        <Button type="submit">Delete Account</Button>
-                    </Form>
-                </section>
-            </div>
-        </main>
+        <section className="grid grid-cols-6 pt-4 px-[10em]">
+            <SideNav title="Profile" user={user} />
+            <Outlet />
+            <ProfileActionButtons user={user} />
+        </section>
     );
 }
 
-function ProfileWidget(user: User) {}
+// Right now this is just the profile Danger section
+function ProfileActionButtons({ user }: User) {
+    const [confirm, setConfirm] = useState(false);
+    const submit = useSubmit();
+
+    async function handleDelete(e: React.SyntheticEvent) {
+        e.preventDefault();
+
+        if (!confirm) {
+            setConfirm(true);
+        } else {
+            const data = {
+                id: user.id,
+            };
+
+            const res = await submit(data, {
+                encType: "application/x-www-form-urlencoded",
+                method: "DELETE",
+                action: `/profile/${user.profile.username}`,
+            });
+
+            console.log(res);
+        }
+    }
+
+    return (
+        <section className="col-span-1 py-6 flex flex-col gap-4">
+            <div className="flex gap-2">
+                <section className=" flex flex-col gap-5 p-4 place-items-center rounded-lg border border-red-400">
+                    <h4 className="text-red-400 font-bold text-lg">
+                        {confirm ? "Delete Forever?" : "Danger Zone"}
+                    </h4>
+                    <Form onSubmit={(e) => handleDelete(e)} method="delete">
+                        <Button variant="danger" type="submit">
+                            {confirm ? "Are You Sure?" : "Delete Account"}
+                        </Button>
+                    </Form>
+                </section>
+            </div>
+        </section>
+    );
+}

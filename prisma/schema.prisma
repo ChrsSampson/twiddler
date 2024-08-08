@@ -13,6 +13,8 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+// -------------User Info------------------
+
 model User {
   id Int @id @default(autoincrement()) @unique
   email String @unique
@@ -20,6 +22,8 @@ model User {
   posts Post[]
   profile_id Int @unique
   profile UserProfile @relation(fields: [profile_id], references: [id], onDelete: Cascade)
+  comments Comments[]
+  liked_posts LikedPosts[]
 }
 
 model UserProfile{
@@ -27,7 +31,10 @@ model UserProfile{
   user User?
   avatar String
   username String @unique
+  reports Int @default(0)
 }
+
+// ------------------------------------------
 
 model Post {
   id Int @id @default(autoincrement()) @unique
@@ -35,5 +42,30 @@ model Post {
   body String?
   author_id Int
   author User @relation(fields: [author_id], references: [id])
+  created_at DateTime @default(now())
+  comments Comments[]
+  likes Int @default(1)
+  views Int @default(1)
+  reports Int @default(0)
+  liked_post LikedPosts[]
+}
+
+model LikedPosts {
+  id Int @id @default(autoincrement()) @unique
+  user_id Int
+  user User @relation(fields: [user_id], references: [id])
+  post_id Int
+  post Post @relation(fields: [post_id], references: [id])
+}
+
+model Comments {
+  id Int @id @default(autoincrement()) @unique
+  body String
+  author_id Int
+  author User @relation(fields: [author_id], references: [id])
+  post_id Int
+  post Post @relation(fields: [post_id], references: [id])
+  reports Int @default(0)
+  likes Int @default(0)
   created_at DateTime @default(now())
 }

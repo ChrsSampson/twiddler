@@ -3,6 +3,7 @@ type ButtonProps = {
     onClick?: () => void;
     disable?: boolean;
     type?: "button" | "submit" | "reset";
+    variant?: "button" | "submit" | "danger";
 };
 
 export default function Button(props: ButtonProps) {
@@ -18,12 +19,15 @@ export default function Button(props: ButtonProps) {
         // the trailing spaces are important here
         const submitStyle = "bg-blue-500 hover:bg-blue-600 ";
         const normalStyle = "bg-green-500 hover:bg-green-700 ";
+        const dangerStyle = "bg-red-500 hover:bg-red-700 ";
         // override the interactive styles
         const normalDisabled = "bg-slate-300 text-slate-400 hover:text-slate-400 ";
 
-        switch (props.type) {
+        switch (props.variant) {
             case "submit":
                 return submitStyle + baseStyle;
+            case "danger":
+                return dangerStyle + baseStyle;
             default:
                 if (props.disable) {
                     return normalDisabled + baseStyle;
