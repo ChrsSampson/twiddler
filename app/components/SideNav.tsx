@@ -3,6 +3,7 @@ import { User } from "@prisma/client";
 import Button from "./ui/Button";
 import { NavLink } from "@remix-run/react";
 import { FaKiwiBird } from "react-icons/fa";
+import { useLocation } from "@remix-run/react";
 
 type NavProps = {
     title?: string;
@@ -34,13 +35,48 @@ export default function SideNav({ title, user }: NavProps) {
     );
 }
 
+// feed - only things user follows show up here
+// export - all posts sorted by likes here
+// message - DMs
+
 function NavLinks() {
+    const location = useLocation();
+
+    const pages = [
+        {
+            text: "Feed",
+            link: "/feed",
+        },
+        {
+            text: "Expore",
+            link: "/",
+        },
+        {
+            text: "Messages",
+            link: "/messages",
+        },
+        {
+            text: "Policy",
+            link: "/policy",
+        },
+    ];
+
+    const active = "font-bold";
+    const base = "hover:underline";
+
     return (
         <div className="flex flex-col text-2xl gap-4">
-            <NavLink to="/feed">For You</NavLink>
-            <NavLink to="/">Explore</NavLink>
-            <NavLink to="/feed">Messages</NavLink>
-            <NavLink to="/policy">Policy</NavLink>
+            {pages.map((page, i) => {
+                return (
+                    <NavLink
+                        className={location.pathname == page.link ? active : base}
+                        key={page.link + page.text + i}
+                        to={page.link}
+                    >
+                        {page.text}
+                    </NavLink>
+                );
+            })}
         </div>
     );
 }

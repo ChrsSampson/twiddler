@@ -67,7 +67,6 @@ export default function CreatePost({ userId }: [Props]) {
             method: "POST",
             encType: "application/x-www-form-urlencoded",
             navigate: false,
-            replace: true,
         });
 
         setShow(false);

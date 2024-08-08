@@ -1,0 +1,5 @@
+-- AlterTable
+ALTER TABLE "Comments" ADD COLUMN     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP;
+
+-- AlterTable
+ALTER TABLE "Post" ADD COLUMN     "views" INTEGER NOT NULL DEFAULT 1;

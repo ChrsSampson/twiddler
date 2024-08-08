@@ -9,7 +9,7 @@ import { prisma } from "~/prisma";
 import { Form } from "@remix-run/react";
 import Button from "~/components/ui/Button";
 import PostFeed from "~/components/PostFeed";
-import LogoutButton from "./logout/route";
+import LogoutButton from "./logout";
 import { useState } from "react";
 import CommentList from "~/components/CommentList";
 

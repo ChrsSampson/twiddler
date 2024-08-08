@@ -9,7 +9,7 @@ import { User, UserProfile, Post } from "@prisma/client";
 import { prisma } from "~/prisma";
 import { Form } from "@remix-run/react";
 import Button from "~/components/ui/Button";
-import LogoutButton from "./logout/route";
+import LogoutButton from "./logout";
 import { useSubmit } from "@remix-run/react";
 
 import { MetaFunction } from "@remix-run/node";

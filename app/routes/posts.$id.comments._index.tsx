@@ -27,6 +27,7 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
                     profile: true,
                 },
             },
+            liked_post: true,
             comments: {},
         },
     });

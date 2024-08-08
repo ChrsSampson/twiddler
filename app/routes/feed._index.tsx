@@ -1,8 +1,4 @@
-import {
-    ActionFunctionArgs,
-    LoaderFunctionArgs,
-    redirect,
-} from "@remix-run/node";
+import { ActionFunctionArgs, LoaderFunctionArgs, redirect } from "@remix-run/node";
 import { useActionData, useLoaderData, useRouteError } from "@remix-run/react";
 import { authenticator } from "~/services/auth.server";
 import { json } from "@remix-run/node";
@@ -26,8 +22,16 @@ export async function loader({ request }: LoaderFunctionArgs) {
             author: {
                 include: {
                     profile: true,
+                    liked_posts: {
+                        include: {
+                            user: true,
+                        },
+                    },
                 },
             },
+        },
+        orderBy: {
+            created_at: "desc",
         },
     });
 

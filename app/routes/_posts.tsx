@@ -1,17 +1,22 @@
-import { ActionFunctionArgs } from "@remix-run/node";
+import { ActionFunctionArgs, LoaderFunctionArgs } from "@remix-run/node";
 import { Post } from "@prisma/client";
-import { Link } from "@remix-run/react";
+import { Link, useLoaderData } from "@remix-run/react";
 import { useSubmit } from "@remix-run/react";
 import { AiOutlineLike } from "react-icons/ai";
 import { GoReport } from "react-icons/go";
 import { FaRegComment } from "react-icons/fa";
 import { useRouteError } from "@remix-run/react";
+import IconButton from "~/components/ui/IconButton";
+import { authenticator } from "~/services/auth.server";
+import { json } from "@remix-run/node";
 
-export async function loader() {
+export async function loader({ request }: LoaderFunctionArgs) {
+    // const user = await authenticator.isAuthenticated(request);
+
+    // return json({ user });
+
     return null;
 }
-
-export async function action({ request }: ActionFunctionArgs) {}
 
 type PostProps = {
     data: Post;
@@ -22,20 +27,24 @@ type PostRequestProps = {
     userId: number;
 };
 
+// this is used directly in a prisma query so it must match the key in prisma
+type KeyType = "likes" | "reports";
+
 export default function Post({ data }: PostProps) {
     const submit = useSubmit();
     const date = new Date(data.created_at).toLocaleDateString();
 
-    async function handleSubmit(key: string) {
-        const data: PostRequestProps = {
+    async function handleSubmit(key: KeyType) {
+        const submit_data: PostRequestProps = {
             key: key,
             userId: Number(data.author_id),
         };
 
-        await submit(data, {
+        await submit(submit_data, {
             encType: "application/x-www-form-urlencoded",
             method: "POST",
-            action: `/posts/${id}`,
+            action: `/posts/${data.id}`,
+            navigate: false,
         });
     }
 
@@ -54,23 +63,20 @@ export default function Post({ data }: PostProps) {
                 {data.body && <p>{data.body}</p>}
             </section>
             <div className="flex justify-evenly p-2 bg-slate-300">
-                <button className="hover:text-blue-500 hover:bg-slate-700 rounded-full p-2">
-                    <AiOutlineLike size={"1.5em"} />
-                </button>
-                <button
-                    type="button"
-                    className="hover:text-blue-500 hover:bg-slate-700 rounded-full p-2"
-                >
-                    <Link to={`/posts/${data.id}/comments`}>
+                <IconButton onClick={() => handleSubmit("likes")}>
+                    <div className="flex place-items-center gap-1">
+                        <AiOutlineLike size={"1.5em"} />
+                        <span>{data.likes}</span>
+                    </div>
+                </IconButton>
+                <Link to={`/posts/${data.id}/comments`}>
+                    <IconButton variant="submit">
                         <FaRegComment size={"1.5em"} />
-                    </Link>
-                </button>
-                <button
-                    onClick={() => handleSubmit("report")}
-                    className="hover:text-blue-500 hover:bg-slate-700 rounded-full p-2"
-                >
+                    </IconButton>
+                </Link>
+                <IconButton onClick={() => handleSubmit("reports")} variant="danger">
                     <GoReport size={"1.5em"} />
-                </button>
+                </IconButton>
             </div>
         </article>
     );

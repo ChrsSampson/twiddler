@@ -16,7 +16,7 @@ export default function PolicyPage() {
                 <div className="flex gap-3 justify-between">
                     <h1 className="text-2xl">FAQ and Policies</h1>
                     <Link to="/">
-                        <Button>Back</Button>
+                        <Button variant="submit">Back</Button>
                     </Link>
                 </div>
                 <Article title="About">
